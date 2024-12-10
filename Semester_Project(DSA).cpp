@@ -164,3 +164,61 @@ public:
         return false;//Return false if our while loop terminates out of if condition.
     }
     };
+
+    class Friend_queue //Class created handling friend requests through queue structure.
+{
+    struct queuenode //The node we have use for our queue data structure.
+    {
+        string name;
+        queuenode* next;
+
+        queuenode(string n):name(n),next(nullptr){}
+    };
+
+    queuenode* front; //keeping track of both front and rear
+    queuenode* rear;  
+
+public:
+    Friend_queue():front(nullptr), rear(nullptr){} //Initializing the values
+
+    void enqueue(string name) //Enqueue function with base condition handling insertin at the rear end.
+    {
+        queuenode* newNode=new queuenode(name);
+        if(!rear) //base conditon.
+        {
+            front=rear=newNode;
+            return;
+        }
+        rear->next=newNode;
+        rear=newNode;
+    }
+
+    void dequeue() //Dequeue function handling deletion at the front end
+    {
+        if(!front)
+        {
+            cout<<"No friend requests to process.\n";
+            return;
+        }
+
+        queuenode* temp=front; 
+        front=front->next; //Moving front ahead.
+
+        if(!front) //Base conditon
+            rear=nullptr;
+
+        cout<<"Processed friend request from: "<<temp->name<<endl; //Dequeued successfully massage.
+        delete temp; //Deleted our temporary node here.
+    }
+
+    void displayrequests() //Displaying all the requests here.
+    {
+        queuenode* current=front;
+        cout<<"Friend Requests:\n";  
+        while(current)
+        {
+            cout<<"- "<<current->name<<endl;
+            current=current->next; //Traversal machnism.
+        }
+    }
+};
