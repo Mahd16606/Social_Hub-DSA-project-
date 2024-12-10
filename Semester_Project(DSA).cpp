@@ -150,4 +150,17 @@ public:
         }
         delete[]array_friend;//Deleted our dynamic array for efficient memory management.
     }
+         bool isFriend(const string&name)
+        {
+        Friend_node*current=head; //Start from head node.
+        while(current)
+        {
+            if(current->data.name==name)//Main condition used to check whether a specific user is friend then their name will be present in the Friend_node struct.
+            {
+                return true;//return true as if name matches and found in Friend_node.
+            }
+            current=current->next;//To perform traversal here.
+        }
+        return false;//Return false if our while loop terminates out of if condition.
+    }
     };
