@@ -63,4 +63,91 @@ public:
             prev=current; //For traversing through our entire linked list.
             current=current->next;//Same as above comment.
         }
-    }};
+    }
+            void merge(Friend arr[], int left, int mid, int right)
+    {
+        int n1=mid-left+1; //Dividing into two halves
+        int n2=right-mid;
+
+        Friend* L=new Friend[n1]; //Creating Friend type arrays for storing the relevant data used in Friend structure.
+        Friend* R=new Friend[n2];
+
+        for(int i=0;i<n1;i++)//Basic merge sort logic ahead.
+        {
+            L[i] = arr[left+ i];
+        }
+        for(int j=0;j<n2;j++)
+        {
+            R[j]=arr[mid+1+j];
+        }
+        int i=0,j=0,k=left;
+        while(i<n1&&j<n2)
+        {
+            if(L[i].name<=R[j].name)
+            {
+                arr[k]=L[i];
+                i++;
+            }
+            else
+            {
+                arr[k]=R[j];
+                j++;
+            }
+            k++;
+        }
+        while(i<n1)
+        {
+            arr[k]=L[i];
+            i++;
+            k++;
+        }
+        while(j<n2)
+        {
+            arr[k]=R[j];
+            j++;
+            k++;
+        }
+        delete[] L;
+        delete[] R;
+    }
+
+    void mergesort(Friend arr[], int left, int right)//main function used for keep on finding mid of the array we keep on breaking into two halves and then applying sorting and merging. 
+    {
+        if(left<right)//Base condition
+        {
+            int mid=left+(right-left)/2;//For finding mid
+
+            mergesort(arr,left,mid);//Recursive call on the left side of the array
+            mergesort(arr,mid+1,right);//Recursive call on the right side of the array
+
+            merge(arr,left,mid,right);//Calling the merge function which sorts and merges the arrays back.
+        }
+    }
+
+    void displayingfriends()
+    {
+        int num_of_friends=0; //initialy zero
+        Friend_node* current=head; //Creating friend node here
+        while(current)
+        {
+            num_of_friends++;//Here we add up all number of friends in traversal using while loop.
+            current=current->next;//this is used for traversal.
+        }
+        Friend* array_friend=new Friend[num_of_friends]; //Creating a new dynamic 1D array of the type Friend struct size equal to number_of_friends
+        current=head; //starting from head node.
+        for(int i=0;i<num_of_friends;i++)
+        {
+            array_friend[i]=current->data;//storing all the friend's data in the newly created array for this unique purpose
+            current=current->next;//Traversal
+        }
+
+        mergesort(array_friend,0,num_of_friends-1);//calling ,ergesort function here for apply the sorting.
+
+        cout<<"Friend List (Alphabetically Sorted):\n";
+        for(int i=0;i<num_of_friends;i++)
+        {
+            cout<<"Name: "<<array_friend[i].name<<",friendship level: "<<array_friend[i].friendshipLevel<<endl; //Here we have the alphabatically sorted list.
+        }
+        delete[]array_friend;//Deleted our dynamic array for efficient memory management.
+    }
+    };
