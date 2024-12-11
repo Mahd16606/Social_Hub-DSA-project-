@@ -222,3 +222,64 @@ public:
         }
     }
 };
+class Blocked_friends
+{
+    struct Stack_node //This is our node for the stack data structure.
+    {
+        string name;
+        Stack_node* next;
+        Stack_node(string n):name(n),next(nullptr){}
+    };
+    Stack_node* top; 
+
+public:
+    Blocked_friends():top(nullptr){}
+
+    void push(string name) //Using push function to insert nodes into our stack.
+    {
+        Stack_node* newnode=new Stack_node(name); //Creating new node dynamically here.
+        newnode->next=top;
+        top=newnode;
+    }
+
+    void pop()
+    {
+        if(top)
+        {
+            Stack_node* temp=top; //Deleting top if it existing then the node before it becomes the new top.
+            top=top->next;
+            delete temp;
+        }
+        else //When our stack is empty.
+        {
+            cout<<"No users to unblock."<<endl;
+        }
+    }
+
+    string top_value()
+    {
+        if(top->next==NULL){ //Checking for empty stack
+            return "";
+        }
+        return top->name; //Returning top name value.
+    }
+
+    bool isEmpty()
+    {
+        return top==NULL; //Checking whether our stack is empty or not.
+    }
+
+    bool is_Blocked(const string& name)
+    {
+        Stack_node* current=top;
+        while(current)
+        {
+            if(current->name==name)
+            {
+                return true;
+            }
+            current=current->next;
+        }
+        return false;
+    }
+};
