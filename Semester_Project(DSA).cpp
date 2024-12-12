@@ -339,3 +339,58 @@ public:
         return count;
     }
 };
+    int main()
+    {
+    // Create some users and friends
+    User user1={"Alice",{"Reading", "Cooking", "Hiking"}};
+    User user2={"Bob",{"Gaming", "Swimming", "Traveling"}};
+    
+    Friend friend1={"Charlie",5, {"Gaming", "Coding", "Music"}};
+    Friend friend2={"Diana",7, {"Cooking", "Dancing", "Traveling"}};
+    
+    // Friend List Test
+    Friend_list friendList;
+    friendList.addingfriend(friend1);
+    friendList.addingfriend(friend2);
+    friendList.displayingfriends();
+
+    // Queue Test
+    Friend_queue friendQueue;
+    friendQueue.enqueue("Charlie");
+    friendQueue.enqueue("Diana");
+    friendQueue.displayrequests();
+    friendQueue.dequeue();
+
+    // Blocked Friends Test
+    Blocked_friends blocked;
+    blocked.push("Charlie");
+    if (blocked.is_Blocked("Charlie")) {
+        cout << "Charlie is blocked.\n";
+    }
+    Blocked_friends blocked;
+
+    // Add blocked friends
+    blocked.push("Alice");
+    blocked.push("Bob");
+    blocked.push("Charlie");
+    
+    // Get and display all blocked friends
+    int blockedCount=0;
+    string* blockedList=blocked.get_blocked_friends(blockedCount);
+    if(blockedList)
+    {
+        cout<<"Blocked Friends List:\n";
+        for (int i=0;i<blockedCount;i++)
+        {
+            cout<<"- "<<blockedList[i]<<endl;
+        }
+        delete[] blockedList;//Free the dynamically allocated memory
+    }
+    else
+    {
+        cout<<"No blocked friends."<<endl;
+    }
+    // Get and display the count of blocked friends
+    cout<<"Total Blocked Friends: "<<blockedCount<<endl;
+    return 0;
+}
