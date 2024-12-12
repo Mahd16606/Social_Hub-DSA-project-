@@ -7,14 +7,14 @@ using namespace std;
 struct User // Using structure to represent a user
 {
     string name;
-    string* interests[3]; // We have fixed-size array(3) for interests.
+    string interests[3]; // We have fixed-size array(3) for interests.
 };
 
 struct Friend // Using structure to represent a friend
 {
     string name;
     int friendshipLevel;
-    string* interests[3]; // We also have fixed-size(3) array for interests.
+    string interests[3]; // We also have fixed-size(3) array for interests.
 };
 
 struct Friend_node //This is our struct for a link list node.
@@ -64,7 +64,7 @@ public:
             current=current->next;//Same as above comment.
         }
     }
-            void merge(Friend arr[], int left, int mid, int right)
+        void merge_test(Friend arr[], int left, int mid, int right)//Used when we copy values from our pointer nodes to arrays(test not used here.)
     {
         int n1=mid-left+1; //Dividing into two halves
         int n2=right-mid;
@@ -111,23 +111,64 @@ public:
         delete[] R;
     }
 
-    void mergesort(Friend arr[], int left, int right)//main function used for keep on finding mid of the array we keep on breaking into two halves and then applying sorting and merging. 
+    void mergesort_test(Friend arr[], int left, int right)//main function used for keep on finding mid of the array we keep on breaking into two halves and then applying sorting and merging. 
     {
         if(left<right)//Base condition
         {
             int mid=left+(right-left)/2;//For finding mid
 
-            mergesort(arr,left,mid);//Recursive call on the left side of the array
-            mergesort(arr,mid+1,right);//Recursive call on the right side of the array
+            mergesort_test(arr,left,mid);//Recursive call on the left side of the array
+            mergesort_test(arr,mid+1,right);//Recursive call on the right side of the array
 
-            merge(arr,left,mid,right);//Calling the merge function which sorts and merges the arrays back.
+            merge_test(arr,left,mid,right);//Calling the merge function which sorts and merges the arrays back.
         }
     }
-
-    void displayingfriends()
+    Friend_node* merge(Friend_node* left, Friend_node* right)//More efficient merge and merge sort functions.
     {
+    if(!left) 
+    return right;
+    if(!right) 
+    return left;
+
+    if(left->data.name<right->data.name)//Here we check whose name data value is smaller, then entering it first into our array.
+    {
+        left->next=merge(left->next, right);//Recursively calling left side and returning the smallest value on the end(next node is NULL) node.
+        return left;//Giving the value in when left or right is nullptr.
+    }
+    else
+    {
+        right->next=merge(left, right->next);//Calling recursively merge function on the left and right of halves of our Friend_node array.
+        return right; //returning right value as it is smaller
+    }
+}
+
+    Friend_node* mergesort(Friend_node* head)
+    {
+    if(!head||!head->next)//This conditon satisfies that we atleast have two nodes.
+    return head;
+
+    Friend_node* slow=head; //This is used for starting sorting and merging from head.
+    Friend_node* fast=head->next;//This is used for starting sorting and merging from the node next to head.
+
+    while(fast&&fast->next) //For traversal
+    {
+        slow=slow->next;
+        fast=fast->next->next;
+    }
+
+    Friend_node* mid=slow->next; //We initialize mid here.
+    slow->next=nullptr;//The mid is currently declared as nullptr here.
+
+    Friend_node* left=mergesort(head);//This is used for recursive call on head pointer
+    Friend_node* right=mergesort(mid);//This is used for recursive call on mid pointer.
+
+    return merge(left, right);
+}
+    void displayingfriends()
+    {   
         int num_of_friends=0; //initialy zero
         Friend_node* current=head; //Creating friend node here
+        head=mergesort(head);//Adding merge_sort head pointer here.
         while(current)
         {
             num_of_friends++;//Here we add up all number of friends in traversal using while loop.
@@ -141,7 +182,7 @@ public:
             current=current->next;//Traversal
         }
 
-        mergesort(array_friend,0,num_of_friends-1);//calling ,ergesort function here for apply the sorting.
+        mergesort_test(array_friend,0,num_of_friends-1);//calling ,ergesort function here for apply the sorting.
 
         cout<<"Friend List (Alphabetically Sorted):\n";
         for(int i=0;i<num_of_friends;i++)
@@ -256,14 +297,13 @@ public:
         }
     }
 
-    string top_value()
+    string top_value(){
+    if(!top)
     {
-        if(top->next==NULL){ //Checking for empty stack
-            return "";
-        }
-        return top->name; //Returning top name value.
+        return ""; // Return empty string if the stack is empty
     }
-
+    return top->name;
+}
     bool isEmpty()
     {
         return top==NULL; //Checking whether our stack is empty or not.
