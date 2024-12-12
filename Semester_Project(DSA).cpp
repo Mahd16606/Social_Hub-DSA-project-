@@ -164,33 +164,19 @@ public:
 
     return merge(left, right);
 }
-    void displayingfriends()
-    {   
-        int num_of_friends=0; //initialy zero
-        Friend_node* current=head; //Creating friend node here
-        head=mergesort(head);//Adding merge_sort head pointer here.
-        while(current)
-        {
-            num_of_friends++;//Here we add up all number of friends in traversal using while loop.
-            current=current->next;//this is used for traversal.
-        }
-        Friend* array_friend=new Friend[num_of_friends]; //Creating a new dynamic 1D array of the type Friend struct size equal to number_of_friends
-        current=head; //starting from head node.
-        for(int i=0;i<num_of_friends;i++)
-        {
-            array_friend[i]=current->data;//storing all the friend's data in the newly created array for this unique purpose
-            current=current->next;//Traversal
-        }
-
-        mergesort_test(array_friend,0,num_of_friends-1);//calling ,ergesort function here for apply the sorting.
-
-        cout<<"Friend List (Alphabetically Sorted):\n";
-        for(int i=0;i<num_of_friends;i++)
-        {
-            cout<<"Name: "<<array_friend[i].name<<",friendship level: "<<array_friend[i].friendshipLevel<<endl; //Here we have the alphabatically sorted list.
-        }
-        delete[]array_friend;//Deleted our dynamic array for efficient memory management.
+  void displayingfriends()//Added newly updated and simplified merge sort function for displaying, as it doesnot create temporary arrays anymore.
+{
+    head=mergesort(head);// Sort the linked list directly using the updated mergesort function.
+    cout<<"Friend List (Alphabetically Sorted):\n";
+    Friend_node* current=head;
+    while(current)
+    {
+        //Printing friend details in alphabetical order.
+        cout<<"Name: "<<current->data.name
+            <<", Friendship Level: "<<current->data.friendshipLevel<<endl;
+        current=current->next;//Traversal logic for the sorted linked list.
     }
+}
          bool isFriend(const string&name)
         {
         Friend_node*current=head; //Start from head node.
@@ -321,5 +307,35 @@ public:
             current=current->next;
         }
         return false;
+    }
+     string* get_blocked_friends(int& count) //For the retrieval all blocked friends as an array.
+    {
+        count=get_blocked_friends_count(); //Used here for getting the number of blocked friends.
+        if(count==0)
+        {
+            return nullptr; //We are returning a nullptr if there are no blocked friends.
+        }
+        string* blocked_friends=new string[count];//Here we dynamically allocate an array of type string and size current for storing the names of our blocked friends.
+        Stack_node* current=top;//Creating a current node of stack_node type and inserting top node value into it. 
+        int index=0;//Index for our newly created node here.
+
+        while(current)
+        {
+            blocked_friends[index++]=current->name;//We used our new array for copying names into the array
+            current=current->next;//Traversal logic here.
+        }
+
+        return blocked_friends; //We are returning our newly made array with all the blocked friends record.
+    }
+    int get_blocked_friends_count() // Retrieve the count of blocked friends
+    {
+        int count=0;
+        Stack_node* current=top;
+        while(current)
+        {
+            count++;//We used this here for incrementing the count for each node
+            current=current->next;//Travesal logic
+        }
+        return count;
     }
 };
