@@ -339,6 +339,45 @@ public:
         return count;
     }
 };
+class AVLTree
+{
+    struct Node
+    {
+        Friend data;
+        Node* left;
+        Node* right;
+        int height;
+        Node(Friend f):data(f),left(nullptr),right(nullptr),height(1){}
+    };
+    Node* root;
+    int height(Node* n)
+    {
+        return n? n->height:0;
+    }
+    int get_balance(Node* n)
+    {
+        return n? height(n->left)-height(n->right):0;
+    }
+    Node* rotateright(Node* y)
+    {
+        Node* x=y->left;
+        Node* T=x->right;
+        x->right=y;
+        y->left=T;
+        y->height=max(height(y->left), height(y->right))+1;
+        x->height=max(height(x->left), height(x->right))+1;
+        return x;
+    }
+    Node* rotateleft(Node* x)
+    {
+        Node* y=x->right;
+        Node* T=y->left;
+        y->left=x;
+        x->right=T;
+        x->height=max(height(x->left), height(x->right))+1;
+        y->height=max(height(y->left), height(y->right))+1;
+        return y;
+    }};
     int main()
     {
     // Create some users and friends
