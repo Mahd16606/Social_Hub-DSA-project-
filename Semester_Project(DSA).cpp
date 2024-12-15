@@ -377,7 +377,65 @@ class AVLTree
         x->height=max(height(x->left), height(x->right))+1;
         y->height=max(height(y->left), height(y->right))+1;
         return y;
-    }};
+        
+    }
+    int balancefactor_updated(Node* n)
+    {
+        return n?height(n->left)-height(n->right):0;
+    }
+    Node* insert(Node* node,Friend f)
+    {
+        if(!node)//our base contion to exist recursion.
+            return new Node(f);//Creating a new node at edge to a leaf node.
+
+        if(f.friendshipLevel<node->data.friendshipLevel)
+            node->left=insert(node->left,f);//This logic implies for traversal through left subtree.
+        else if(f.friendshipLevel>node->data.friendshipLevel)//This logic implies for travesal through right subtree.
+            node->right=insert(node->right,f);
+        else
+        return node;
+        node->height=max(height(node->left),height(node->right))+1;//updating the height after the node insertion.
+        int balance=balancefactor_updated(node);//Getting the new balance factor to check for imbalance.
+
+        if(balance>1&&f.friendshipLevel<node->left->data.friendshipLevel)
+            return rotateright(node);//This implies for LL rotation.(As right child of right subtree(of root with imbalance) is imbalanced with right heavy condition).
+
+        if(balance<-1&&f.friendshipLevel>node->right->data.friendshipLevel)
+            return rotateleft(node);//This implies for RR rotaion.(As left child of left subtree(of root with imbalance) is imbalanced with left heavy condition).
+
+        if(balance>1&&f.friendshipLevel>node->left->data.friendshipLevel)
+        {
+            node->left=rotateleft(node->left);//First applying left rotation on the left subtree of root where the imbalance appears.
+            return rotateright(node);//This here implies for LR rotaion
+        }
+
+        if(balance<-1&&f.friendshipLevel<node->right->data.friendshipLevel)
+        {
+            node->right=rotateright(node->right);//First applying right rotation on the right subtree of root where the imbalance appears.
+            return rotateleft(node);//This here implies for RL rotation.
+        }
+        return node;//Returning node here.
+    }
+
+    void inOrder(Node* root)//For displaying names with highest friendship level first.
+    {
+        if(root)
+        {
+            inOrder(root->left);//recursion for traversing first into the deepest left most node.
+            cout<<"Name: "<<root->data.name<<", Friendship Level: "<<root->data.friendshipLevel<<endl;//For displaying the friends levels.
+            inOrder(root->right);//recursion for traversing after through the deepest right most node.
+        }
+    }
+    AVLTree():root(nullptr){}
+    void addfriend(Friend f)//for adding a new object friend of Friend type and inserting through interest level sequences.
+    {
+        root=insert(root,f);//This is for insert function 
+    }
+    void displayfriends()//This is for displaying all the names of friends with friendship levels through inorder traversal.
+    {
+        inOrder(root);//Inorder....traversal applied here.
+    }
+    };
     int main()
     {
     // Create some users and friends
