@@ -465,6 +465,50 @@ public:
             names_of_users[index]=name;
         }
     }
+    void addingconnections(int first_user,int secound_user)//Also known as "edges".
+    {
+        if(first_user>=0&&first_user<num_of_users&&secound_user>=0&&secound_user<num_of_users)//For checking wether a connection between a node is possible or not.
+        {
+            matrix[first_user][secound_user]=matrix[secound_user][first_user]=true; //As we used undirected graph, thus our edges are pointing in both directions.
+        }
+        else
+        {
+            cout<<"Invalid user index.\nThus connection(Edge) not possible"<<endl;
+        }
+    }
+    void displaying_all_connections()//Use BFS and DFS and give users options to use both in the interface.
+    {
+        cout<<"Mutual Friend Connections:\n";
+        for(int i=0;i<num_of_users;++i)
+        {
+            cout<<names_of_users[i]<<"-> ";
+            for(int j=0;j<num_of_users;++j)
+            {
+                if(matrix[i][j])
+                {
+                    cout<<names_of_users[j]<<" ";
+                }
+            }
+            cout<<endl;
+        }
+    }
+    void suggesting_mutual_friends(int user_index)
+    {
+        cout<<"Mutual Friend Suggestions for "<<names_of_users[user_index]<<":\n";
+        for(int i=0;i<num_of_users;++i)
+        {
+            if(matrix[user_index][i])
+            {
+                for(int j=0;j<num_of_users;++j)
+                {
+                    if(matrix[i][j]&&!matrix[user_index][j]&&j!=user_index)//The condition used in skipping user_index typed in.
+                    {
+                        cout<<"-"<<names_of_users[j]<<endl;
+                    }
+                }
+            }
+        }
+    }
 };
     int main()
     {
