@@ -436,6 +436,36 @@ class AVLTree
         inOrder(root);//Inorder....traversal applied here.
     }
     };
+    class Graph
+{
+    int num_of_users; //Used for number of users.
+    bool** matrix; //Using 2D adjancency matrix here of the type bool, because 
+    string* names_of_users;//Used for users' name storage.
+public:
+    Graph(int number):num_of_users(number)
+    {
+        matrix=new bool*[num_of_users];
+        names_of_users=new string[num_of_users];
+        for(int i=0;i<num_of_users;++i) {
+            matrix[i]=new bool[num_of_users]();
+        }
+    }
+    ~Graph()
+    {
+        for(int i=0;i<num_of_users;++i)
+        {
+            delete[] matrix[i];
+        }
+        delete[] matrix; //Managing dynamically allocated memory efficiently thus preventing memory leak.
+        delete[] names_of_users;//Managing dynamically allocated memory efficiently thus preventing memory leak.
+    }
+    void settinguser(int index,string name)
+    {
+        if(index>=0&&index<num_of_users){ //Adding user name to our string array if the index value is valid.
+            names_of_users[index]=name;
+        }
+    }
+};
     int main()
     {
     // Create some users and friends
