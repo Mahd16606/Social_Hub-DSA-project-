@@ -438,72 +438,99 @@ class AVLTree
     };
     class Graph
 {
-    int num_of_users; //Used for number of users.
-    bool** matrix; //Using 2D adjancency matrix here of the type bool, because 
-    string* names_of_users;//Used for users' name storage.
+    int num_of_users; // Used for number of users.
+    bool** matrix;    // Using 2D adjacency matrix here of the type bool.
+    string* names_of_users; // Used for users' name storage.
+
 public:
-    Graph(int number):num_of_users(number)
+    Graph(int number) : num_of_users(number)
     {
-        matrix=new bool*[num_of_users];
-        names_of_users=new string[num_of_users];
-        for(int i=0;i<num_of_users;++i) {
-            matrix[i]=new bool[num_of_users]();
+        matrix = new bool*[num_of_users];
+        names_of_users = new string[num_of_users];
+        for (int i = 0; i < num_of_users; ++i)
+        {
+            matrix[i] = new bool[num_of_users]();
         }
     }
+
     ~Graph()
     {
-        for(int i=0;i<num_of_users;++i)
+        for (int i = 0; i < num_of_users; ++i)
         {
             delete[] matrix[i];
         }
-        delete[] matrix; //Managing dynamically allocated memory efficiently thus preventing memory leak.
-        delete[] names_of_users;//Managing dynamically allocated memory efficiently thus preventing memory leak.
+        delete[] matrix;          // Managing dynamically allocated memory efficiently thus preventing memory leak.
+        delete[] names_of_users; // Managing dynamically allocated memory efficiently thus preventing memory leak.
     }
-    void settinguser(int index,string name)
+
+    void settinguser(int index, string name)
     {
-        if(index>=0&&index<num_of_users){ //Adding user name to our string array if the index value is valid.
-            names_of_users[index]=name;
+        if (index >= 0 && index < num_of_users)
+        { // Adding user name to our string array if the index value is valid.
+            names_of_users[index] = name;
         }
     }
-    void addingconnections(int first_user,int secound_user)//Also known as "edges".
+
+    void addingconnections(int first_user, int secound_user) // Also known as "edges".
     {
-        if(first_user>=0&&first_user<num_of_users&&secound_user>=0&&secound_user<num_of_users)//For checking wether a connection between a node is possible or not.
+        if (first_user >= 0 && first_user < num_of_users && secound_user >= 0 && secound_user < num_of_users) // For checking whether a connection between nodes is possible or not.
         {
-            matrix[first_user][secound_user]=matrix[secound_user][first_user]=true; //As we used undirected graph, thus our edges are pointing in both directions.
+            matrix[first_user][secound_user] = matrix[secound_user][first_user] = true; // As we used an undirected graph, thus our edges are pointing in both directions.
         }
         else
         {
-            cout<<"Invalid user index.\nThus connection(Edge) not possible"<<endl;
+            cout << "Invalid user index.\nThus connection (Edge) not possible" << endl;
         }
     }
-    void displaying_all_connections()//Use BFS and DFS and give users options to use both in the interface.
+
+    void displaying_all_connections() // Use BFS for displaying connections.
     {
-        cout<<"Mutual Friend Connections:\n";
-        for(int i=0;i<num_of_users;++i)
+        cout << "Mutual Friend Connections (BFS Traversal):\n";
+        bool* visited = new bool[num_of_users]();
+        int* queue = new int[num_of_users];
+
+        for (int start_user = 0; start_user < num_of_users; ++start_user)
         {
-            cout<<names_of_users[i]<<"-> ";
-            for(int j=0;j<num_of_users;++j)
+            if (!visited[start_user])
             {
-                if(matrix[i][j])
+                int front = 0, rear = 0;
+                queue[rear++] = start_user;
+                visited[start_user] = true;
+
+                while (front < rear)
                 {
-                    cout<<names_of_users[j]<<" ";
+                    int current_user = queue[front++];
+                    cout << names_of_users[current_user] << " -> ";
+
+                    for (int neighbor = 0; neighbor < num_of_users; ++neighbor)
+                    {
+                        if (matrix[current_user][neighbor] && !visited[neighbor])
+                        {
+                            queue[rear++] = neighbor;
+                            visited[neighbor] = true;
+                        }
+                    }
                 }
+                cout << endl;
             }
-            cout<<endl;
         }
+
+        delete[] visited;
+        delete[] queue;
     }
+
     void suggesting_mutual_friends(int user_index)
     {
-        cout<<"Mutual Friend Suggestions for "<<names_of_users[user_index]<<":\n";
-        for(int i=0;i<num_of_users;++i)
+        cout << "Mutual Friend Suggestions for " << names_of_users[user_index] << ":\n";
+        for (int i = 0; i < num_of_users; ++i)
         {
-            if(matrix[user_index][i])
+            if (matrix[user_index][i])
             {
-                for(int j=0;j<num_of_users;++j)
+                for (int j = 0; j < num_of_users; ++j)
                 {
-                    if(matrix[i][j]&&!matrix[user_index][j]&&j!=user_index)//The condition used in skipping user_index typed in.
+                    if (matrix[i][j] && !matrix[user_index][j] && j != user_index) // The condition used in skipping user_index typed in.
                     {
-                        cout<<"-"<<names_of_users[j]<<endl;
+                        cout << "-" << names_of_users[j] << endl;
                     }
                 }
             }
