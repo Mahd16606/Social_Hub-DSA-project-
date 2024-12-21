@@ -1,0 +1,5 @@
+0 Alice 10 Reading Cooking Hiking
+1 Bob 8 Gaming Traveling Swimming
+2 Charlie 15 Music Coding Dancing
+3 Diana 12 Art Photography Gardening
+4 Eve 7 Chess Running Writing

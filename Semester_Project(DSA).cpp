@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include <vector>
 using namespace std;
 
 struct User // Using structure to represent a user
@@ -340,7 +341,8 @@ public:
     }
 };
 class AVLTree
-{
+{   
+    public:
     struct Node
     {
         Friend data;
@@ -349,7 +351,8 @@ class AVLTree
         int height;
         Node(Friend f):data(f),left(nullptr),right(nullptr),height(1){}
     };
-    Node* root;
+    Node* root=NULL;
+    
     int height(Node* n)
     {
         return n? n->height:0;
@@ -426,7 +429,7 @@ class AVLTree
             inOrder(root->right);//recursion for traversing after through the deepest right most node.
         }
     }
-    AVLTree():root(nullptr){}
+    
     void addfriend(Friend f)//for adding a new object friend of Friend type and inserting through interest level sequences.
     {
         root=insert(root,f);//This is for insert function 
@@ -435,7 +438,7 @@ class AVLTree
     {
         inOrder(root);//Inorder....traversal applied here.
     }
-    };
+};
     class Graph
 {
     int num_of_users; // Used for number of users.
@@ -443,6 +446,7 @@ class AVLTree
     string* names_of_users; // Used for users' name storage.
 
 public:
+    
     Graph(int number) : num_of_users(number)
     {
         matrix = new bool*[num_of_users];
@@ -536,7 +540,103 @@ public:
             }
         }
     }
+};  
+
+    
+
+    class FriendManagement {
+public:
+    Friend_list friendList;
+    Friend_queue friendQueue;
+    Blocked_friends blockedFriends;
+    AVLTree avlTree; // Assuming AVLTree is used for storing friends
+    Graph graph; // Assuming Graph is used to manage mutual friend suggestions
+
+
+    FriendManagement(int num_users) : graph(num_users) {}
+
+    // Add a friend to the friend list
+    void addFriend(Friend friendObj) {
+        friendList.addingfriend(friendObj);
+        avlTree.addfriend(friendObj);
+    }
+
+    // Remove a friend from the friend list
+    void removeFriend(const string& friendName) {
+        friendList.removingfriend(friendName);
+    }
+
+    // Display the friend list in alphabetical order
+    void displayFriends() {
+        friendList.displayingfriends();
+    }
+
+    // Enqueue a friend request
+    void addFriendRequest(const string& friendName) {
+        friendQueue.enqueue(friendName);
+    }
+
+    // Process (dequeue) a friend request
+    void processFriendRequest() {
+        friendQueue.dequeue();
+    }
+
+    // Display all friend requests
+    void displayFriendRequests() {
+        friendQueue.displayrequests();
+    }
+
+    // Block a friend
+    void blockFriend(const string& friendName) {
+        blockedFriends.push(friendName);
+    }
+
+    // Unblock a friend
+    void unblockFriend() {
+        blockedFriends.pop();
+    }
+
+    // Display all blocked friends
+    void displayBlockedFriends() {
+        int blockedCount = 0;
+        string* blockedList = blockedFriends.get_blocked_friends(blockedCount);
+        if (blockedList) {
+            cout << "Blocked Friends List:\n";
+            for (int i = 0; i < blockedCount; i++) {
+                cout << "- " << blockedList[i] << endl;
+            }
+            delete[] blockedList; // Free the dynamically allocated memory
+        } else {
+            cout << "No blocked friends." << endl;
+        }
+    }
+
+    // Check if a friend is blocked
+    bool isFriendBlocked(const string& friendName) {
+        return blockedFriends.is_Blocked(friendName);
+    }
+
+    // Suggest mutual friends for a given user index
+    void suggestMutualFriends(int userIndex) {
+        graph.suggesting_mutual_friends(userIndex);
+    }
+
+    // Set user names in the graph
+    void setUser(int index, const string& name) {
+        graph.settinguser(index, name);
+    }
+
+    // Add connections between users in the graph
+    void addConnection(int user1, int user2) {
+        graph.addingconnections(user1, user2);
+    }
+
+    // Display all mutual friend connections using BFS traversal
+    void displayMutualConnections() {
+        graph.displaying_all_connections();
+    }
 };
+
     int main()
     {
     // Create some users and friends
