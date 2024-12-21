@@ -741,7 +741,30 @@ void loadFromFile(Graph& graph, Friend_list& friendList, AVLTree& avlTree) {
 
     cout << "Data successfully loaded from files.\n";
 }
-
+void displayMenu() {
+    cout << "\n--- Social Network Menu ---\n";
+    cout << "1. Add Friend to Friend List\n";
+    cout << "2. Remove Friend from Friend List\n";
+    cout << "3. Display Friend List\n";
+    cout << "4. Add Friend Request\n";
+    cout << "5. Process Friend Request\n";
+    cout << "6. Display Friend Requests\n";
+    cout << "7. Block a User\n";
+    cout << "8. Undo Block\n";
+    cout << "9. Display Blocked Users\n";
+    cout << "10. Add Friend to AVL Tree\n";
+    cout << "11. Display Friends in AVL Tree\n";
+    cout << "12. Add User to Graph\n";
+    cout << "13. Add Connection in Graph\n";
+    cout << "14. Display Connections in Graph\n";
+    cout << "15. Suggest Friends (BFS)\n";
+    cout << "16. Suggest Friends (DFS)\n";
+    cout << "17. Add Interest to Hash Map\n";
+    cout << "18. Recommend Friends by Interest\n";
+    cout << "19. Save to File\n";
+    cout << "20. Load from File\n";
+    cout << "0. Exit\n";
+}
     int main()
     {
     // Create some users and friends
