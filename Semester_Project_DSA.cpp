@@ -622,93 +622,82 @@ public:
 
     
 
-    class FriendManagement {
+   class HashMap {
+    struct Node {
+        string key;        // Interest
+        string value;      // Friend name
+        Node* next;        // Pointer to the next node (for separate chaining)
+        Node(string k, string v) : key(k), value(v), next(nullptr) {}
+    };
+
+    Node** table;          // Array of pointers to linked lists
+    int capacity;          // Size of the hash table
+    int hashFunction(string key) {
+        int hash = 0;
+        for (char c : key) {
+            hash = (hash * 31 + c) % capacity;  // Simple polynomial rolling hash
+        }
+        return hash;
+    }
+
 public:
-    Friend_list friendList;
-    Friend_queue friendQueue;
-    Blocked_friends blockedFriends;
-    AVLTree avlTree; // Assuming AVLTree is used for storing friends
-    Graph graph; // Assuming Graph is used to manage mutual friend suggestions
-
-
-    FriendManagement(int num_users) : graph(num_users) {}
-
-    // Add a friend to the friend list
-    void addFriend(Friend friendObj) {
-        friendList.addingfriend(friendObj);
-        avlTree.addfriend(friendObj);
-    }
-
-    // Remove a friend from the friend list
-    void removeFriend(const string& friendName) {
-        friendList.removingfriend(friendName);
-    }
-
-    // Display the friend list in alphabetical order
-    void displayFriends() {
-        friendList.displayingfriends();
-    }
-
-    // Enqueue a friend request
-    void addFriendRequest(const string& friendName) {
-        friendQueue.enqueue(friendName);
-    }
-
-    // Process (dequeue) a friend request
-    void processFriendRequest() {
-        friendQueue.dequeue();
-    }
-
-    // Display all friend requests
-    void displayFriendRequests() {
-        friendQueue.displayrequests();
-    }
-
-    // Block a friend
-    void blockFriend(const string& friendName) {
-        blockedFriends.push(friendName);
-    }
-
-    // Unblock a friend
-    void unblockFriend() {
-        blockedFriends.pop();
-    }
-
-    // Display all blocked friends
-    void displayBlockedFriends() {
-        int blockedCount = 0;
-        string* blockedList = blockedFriends.get_blocked_friends(blockedCount);
-        if (blockedList) {
-            cout << "Blocked Friends List:\n";
-            for (int i = 0; i < blockedCount; i++) {
-                cout << "- " << blockedList[i] << endl;
-            }
-            delete[] blockedList; // Free the dynamically allocated memory
-        } else {
-            cout << "No blocked friends." << endl;
+    HashMap(int size) : capacity(size) {
+        table = new Node * [capacity];
+        for (int i = 0; i < capacity; i++) {
+            table[i] = nullptr;
         }
     }
 
-    // Check if a friend is blocked
-    bool isFriendBlocked(const string& friendName) {
-        return blockedFriends.is_Blocked(friendName);
+    ~HashMap() {
+        for (int i = 0; i < capacity; i++) {
+            Node* current = table[i];
+            while (current) {
+                Node* temp = current;
+                current = current->next;
+                delete temp;
+            }
+        }
+        delete[] table;
     }
 
-    // Suggest mutual friends for a given user index
-   
-    // Set user names in the graph
-    void setUser(int index, const string& name) {
-        graph.settinguser(index, name);
+    void insert(string key, string value) {
+        int index = hashFunction(key);
+        Node* newNode = new Node(key, value);
+        newNode->next = table[index];
+        table[index] = newNode;
     }
 
-    // Add connections between users in the graph
-    void addConnection(int user1, int user2) {
-        graph.addingconnections(user1, user2);
+    void display() {
+        for (int i = 0; i < capacity; i++) {
+            Node* current = table[i];
+            if (current) {
+                cout << "Bucket " << i << ": ";
+                while (current) {
+                    cout << "(" << current->key << ", " << current->value << ") -> ";
+                    current = current->next;
+                }
+                cout << "NULL\n";
+            }
+        }
     }
 
-    // Display all mutual friend connections using BFS traversal
-    void displayMutualConnections() {
-        graph.displaying_all_connections();
+    void recommend(string interest) {
+        int index = hashFunction(interest);
+        Node* current = table[index];
+        bool found = false;
+
+        cout << "Friends with interest \"" << interest << "\":\n";
+        while (current) {
+            if (current->key == interest) {
+                cout << "- " << current->value << endl;
+                found = true;
+            }
+            current = current->next;
+        }
+
+        if (!found) {
+            cout << "No friends found with the interest \"" << interest << "\".\n";
+        }
     }
 };
 
