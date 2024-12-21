@@ -258,18 +258,21 @@ class Blocked_friends
         Stack_node* next;
         Stack_node(string n):name(n),next(nullptr){}
     };
-    Stack_node* top; 
-
+    Stack_node* top;//This will be our creating the main stack for our blocked friends.
+    Stack_node* undoTop;//A stack for the undo history.
 public:
-    Blocked_friends():top(nullptr){}
+    Blocked_friends():top(nullptr), undoTop(nullptr){}//constructor.
 
-    void push(string name) //Using push function to insert nodes into our stack.
+    void push(string name)
     {
-        Stack_node* newnode=new Stack_node(name); //Creating new node dynamically here.
+        Stack_node* newnode=new Stack_node(name);
         newnode->next=top;
         top=newnode;
+        // Record this block operation in the undo stack
+        Stack_node* undoNode=new Stack_node(name);
+        undoNode->next=undoTop;
+        undoTop=undoNode;
     }
-
     void pop()
     {
         if(top)
@@ -283,7 +286,6 @@ public:
             cout<<"No users to unblock."<<endl;
         }
     }
-
     string top_value(){
     if(!top)
     {
@@ -295,7 +297,6 @@ public:
     {
         return top==NULL; //Checking whether our stack is empty or not.
     }
-
     bool is_Blocked(const string& name)
     {
         Stack_node* current=top;
@@ -338,6 +339,48 @@ public:
             current=current->next;//Travesal logic
         }
         return count;
+    }
+    void undo_block()
+    {
+        if(!undoTop)
+        {
+            cout<<"No block action to undo."<<endl;
+            return;
+        }
+        string nameToUnblock=undoTop->name;
+        // Remove from the undo stack
+        Stack_node* tempUndo=undoTop;
+        undoTop=undoTop->next;
+        delete tempUndo;
+        // Remove from the main stack of blocked friends
+        if(top&&top->name==nameToUnblock)
+        {
+            pop();
+        }
+        else
+        {
+            Stack_node* current=top;
+            Stack_node* prev=nullptr;
+            while(current)
+            {
+                if(current->name==nameToUnblock)
+                {
+                    if(prev)
+                    {
+                        prev->next=current->next;
+                    }
+                    else
+                    {
+                        top=current->next;
+                    }
+                    delete current;
+                    break;
+                }
+                prev=current;
+                current=current->next;
+            }
+        }
+        cout<<"Undo successful: Unblocked "<<nameToUnblock<<endl;
     }
 };
 class AVLTree
@@ -439,93 +482,111 @@ class AVLTree
         inOrder(root);//Inorder....traversal applied here.
     }
 };
-   class Graph {
+class Graph
+{
     int num_of_users;          // Number of users (removed const)
     bool** matrix;             // Adjacency matrix
     string* names_of_users;    // User names
 
     // Custom Queue Implementation
-    class Queue {
+    class Queue
+    {
         int* arr;
         int front, rear, capacity;
 
     public:
-        Queue(int size) : front(-1), rear(-1), capacity(size) {
-            arr = new int[size];
+        Queue(int size):front(-1),rear(-1),capacity(size)
+        {
+            arr=new int[size];
         }
 
-        ~Queue() {
+        ~Queue()
+        {
             delete[] arr;
         }
 
-        void enqueue(int val) {
-            if (rear == capacity - 1) {
-                cout << "Queue overflow\n";
+        void enqueue(int val)
+        {
+            if (rear==capacity-1)
+            {
+                cout<<"Queue overflow\n";
                 return;
             }
-            if (front == -1) front = 0;
-            arr[++rear] = val;
+            if(front==-1)
+            front=0;
+            arr[++rear]=val;
         }
-
-        int dequeue() {
-            if (front == -1 || front > rear) {
-                cout << "Queue underflow\n";
+        int dequeue()
+        {
+            if(front==-1||front>rear)
+            {
+                cout<<"Queue underflow\n";
                 return -1;
             }
             return arr[front++];
         }
 
-        bool isEmpty() {
-            return front == -1 || front > rear;
+        bool isEmpty()
+        {
+            return front==-1||front>rear;
         }
     };
 
     // Custom Stack Implementation
-    class Stack {
+    class Stack
+    {
         int* arr;
         int top, capacity;
 
     public:
-        Stack(int size) : top(-1), capacity(size) {
-            arr = new int[size];
+        Stack(int size):top(-1), capacity(size)
+        {
+            arr=new int[size];
         }
-
-        ~Stack() {
+        ~Stack()
+        {
             delete[] arr;
         }
 
         void push(int val) {
-            if (top == capacity - 1) {
-                cout << "Stack overflow\n";
+            if (top==capacity-1)
+            {
+                cout<<"Stack overflow\n";
                 return;
             }
-            arr[++top] = val;
+            arr[++top]=val;
         }
 
-        int pop() {
-            if (top == -1) {
-                cout << "Stack underflow\n";
+        int pop()
+        {
+            if(top==-1)
+            {
+                cout<<"Stack underflow\n";
                 return -1;
             }
             return arr[top--];
         }
 
-        bool isEmpty() {
-            return top == -1;
+        bool isEmpty()
+        {
+            return top==-1;
         }
     };
 
 public:
-    Graph(int number) : num_of_users(number) {
-        matrix = new bool* [num_of_users];
-        names_of_users = new string[num_of_users];
-        for (int i = 0; i < num_of_users; ++i) {
-            matrix[i] = new bool[num_of_users]();
+    Graph(int number):num_of_users(number)
+    {
+        matrix=new bool*[num_of_users];
+        names_of_users=new string[num_of_users];
+        for (int i=0;i<num_of_users;++i)
+        {
+            matrix[i]=new bool[num_of_users]();
         }
     }
-
-    ~Graph() {
-        for (int i = 0; i < num_of_users; ++i) {
+    ~Graph()
+    {
+        for(int i=0;i<num_of_users;++i)
+        {
             delete[] matrix[i];
         }
         delete[] matrix;
@@ -533,65 +594,79 @@ public:
     }
 
     void settinguser(int index, string name) {
-        if (index >= 0 && index < num_of_users) {
-            names_of_users[index] = name;
+        if(index>=0&&index<num_of_users)
+        {
+            names_of_users[index]=name;
         }
     }
 
-    void addingconnections(int first_user, int second_user) {
-        if (first_user >= 0 && first_user < num_of_users &&
-            second_user >= 0 && second_user < num_of_users) {
-            matrix[first_user][second_user] = matrix[second_user][first_user] = true;
+    void addingconnections(int first_user,int second_user)
+    {
+        if(first_user>=0&&first_user<num_of_users&&
+            second_user>=0&&second_user<num_of_users)
+            {
+            matrix[first_user][second_user] = matrix[second_user][first_user]=true;
         }
-        else {
-            cout << "Invalid user index. Connection not possible.\n";
+        else
+        {
+            cout<<"Invalid user index. Connection not possible.\n";
         }
     }
-
-    void displaying_all_connections() {
-        cout << "Mutual Friend Connections:\n";
-        for (int i = 0; i < num_of_users; ++i) {
-            cout << names_of_users[i] << " -> ";
-            for (int j = 0; j < num_of_users; ++j) {
-                if (matrix[i][j]) {
-                    cout << names_of_users[j] << " ";
+    void displaying_all_connections()
+    {
+        cout<<"Mutual Friend Connections:\n";
+        for(int i=0;i<num_of_users;++i)
+        {
+            cout<<names_of_users[i]<<" -> ";
+            for(int j=0;j<num_of_users;++j)
+            {
+                if(matrix[i][j])
+                {
+                    cout<<names_of_users[j]<<" ";
                 }
             }
-            cout << endl;
+            cout<<endl;
         }
     }
 
-    void suggesting_mutual_friends_bfs(int user_index) {
-        if (user_index < 0 || user_index >= num_of_users) {
-            cout << "Invalid user index.\n";
+    void suggesting_mutual_friends_bfs(int user_index)
+    {
+        if(user_index<0||user_index>=num_of_users)
+        {
+            cout<<"Invalid user index.\n";
             return;
         }
 
         vector<bool> visited(num_of_users, false); // Use a vector for dynamic size
         Queue q(num_of_users);
         q.enqueue(user_index);
-        visited[user_index] = true;
+        visited[user_index]=true;
 
-        cout << "Friend Suggestions for " << names_of_users[user_index] << " (BFS):\n";
+        cout<<"Friend Suggestions for "<<names_of_users[user_index]<<" (BFS):\n";
 
-        while (!q.isEmpty()) {
-            int current = q.dequeue();
-
-            for (int i = 0; i < num_of_users; ++i) {
-                if (matrix[current][i] && !visited[i]) {
-                    visited[i] = true;
+        while(!q.isEmpty())
+        {
+            int current=q.dequeue();
+            for(int i=0;i<num_of_users;++i)
+            {
+                if(matrix[current][i] && !visited[i])
+                {
+                    visited[i]=true;
                     q.enqueue(i);
-                    if (!matrix[user_index][i] && i != user_index) {
-                        cout << "- " << names_of_users[i] << endl;
+                    if(!matrix[user_index][i]&&i!=user_index)
+                    {
+                        cout<<"- "<<names_of_users[i]<<endl;
                     }
                 }
             }
         }
     }
 
-    void suggesting_mutual_friends_dfs(int user_index) {
-        if (user_index < 0 || user_index >= num_of_users) {
-            cout << "Invalid user index.\n";
+    void suggesting_mutual_friends_dfs(int user_index)
+    {
+        if(user_index<0||user_index>=num_of_users)
+        {
+            cout<<"Invalid user index.\n";
             return;
         }
 
@@ -599,228 +674,199 @@ public:
         Stack s(num_of_users);
         s.push(user_index);
 
-        cout << "Friend Suggestions for " << names_of_users[user_index] << " (DFS):\n";
+        cout<<"Friend Suggestions for "<<names_of_users[user_index]<<" (DFS):\n";
 
-        while (!s.isEmpty()) {
+        while(!s.isEmpty())
+        {
             int current = s.pop();
 
-            if (!visited[current]) {
-                visited[current] = true;
+            if (!visited[current]) 
+            {
+                visited[current]=true;
 
-                for (int i = 0; i < num_of_users; ++i) {
-                    if (matrix[current][i] && !visited[i]) {
+                for(int i=0;i<num_of_users;++i)
+                {
+                    if(matrix[current][i] && !visited[i])
+                    {
                         s.push(i);
-                        if (!matrix[user_index][i] && i != user_index) {
-                            cout << "- " << names_of_users[i] << endl;
+                        if(!matrix[user_index][i]&&i!=user_index)
+                        {
+                            cout<<"- "<<names_of_users[i]<<endl;
                         }
                     }
                 }
             }
         }
     }
-}; 
+};
 
-    
-
-   class HashMap {
+class HashMap {
     struct Node {
         string key;        // Interest
         string value;      // Friend name
         Node* next;        // Pointer to the next node (for separate chaining)
-        Node(string k, string v) : key(k), value(v), next(nullptr) {}
+        Node(string k, string v) : key(k), value(v), next(nullptr){}
     };
 
     Node** table;          // Array of pointers to linked lists
     int capacity;          // Size of the hash table
-    int hashFunction(string key) {
-        int hash = 0;
-        for (char c : key) {
-            hash = (hash * 31 + c) % capacity;  // Simple polynomial rolling hash
+    int hashFunction(string key)
+    {
+        int hash=0;
+        for(char c:key)
+        {
+            hash=(hash*31+c)%capacity;  // Simple polynomial rolling hash
         }
         return hash;
     }
 
 public:
-    HashMap(int size) : capacity(size) {
-        table = new Node * [capacity];
-        for (int i = 0; i < capacity; i++) {
+    HashMap(int size):capacity(size)
+    {
+        table=new Node*[capacity];
+        for(int i=0;i<capacity;i++)
+        {
             table[i] = nullptr;
         }
     }
 
-    ~HashMap() {
-        for (int i = 0; i < capacity; i++) {
-            Node* current = table[i];
-            while (current) {
-                Node* temp = current;
-                current = current->next;
+    ~HashMap()
+    {
+        for(int i=0;i<capacity;i++)
+        {
+            Node* current=table[i];
+            while(current)
+            {
+                Node* temp=current;
+                current=current->next;
                 delete temp;
             }
         }
         delete[] table;
     }
-
-    void insert(string key, string value) {
-        int index = hashFunction(key);
-        Node* newNode = new Node(key, value);
-        newNode->next = table[index];
-        table[index] = newNode;
+    void insert(string key, string value)
+    {
+        int index=hashFunction(key);
+        Node* newNode=new Node(key, value);
+        newNode->next=table[index];
+        table[index]=newNode;
     }
-
-    void display() {
-        for (int i = 0; i < capacity; i++) {
-            Node* current = table[i];
-            if (current) {
-                cout << "Bucket " << i << ": ";
-                while (current) {
-                    cout << "(" << current->key << ", " << current->value << ") -> ";
-                    current = current->next;
+    void display()
+    {
+        for (int i=0;i<capacity; i++)
+        {
+            Node* current=table[i];
+            if(current)
+            {
+                cout<<"Bucket "<<i<<": ";
+                while(current)
+                {
+                    cout<<"("<<current->key<<", "<<current->value<<") -> ";
+                    current=current->next;
                 }
-                cout << "NULL\n";
+                cout<<"NULL\n";
             }
         }
     }
 
-    void recommend(string interest) {
-        int index = hashFunction(interest);
-        Node* current = table[index];
-        bool found = false;
+    void recommend(string interest)
+    {
+        int index=hashFunction(interest);
+        Node* current=table[index];
+        bool found=false;
 
-        cout << "Friends with interest \"" << interest << "\":\n";
-        while (current) {
-            if (current->key == interest) {
-                cout << "- " << current->value << endl;
-                found = true;
+        cout<<"Friends with interest \""<<interest<<"\":\n";
+        while(current)
+        {
+            if(current->key==interest)
+            {
+                cout<<"- "<<current->value<<endl;
+                found=true;
             }
-            current = current->next;
+            current=current->next;
         }
-
-        if (!found) {
-            cout << "No friends found with the interest \"" << interest << "\".\n";
+        if(!found)
+        {
+            cout<<"No friends found with the interest \""<<interest<<"\".\n";
         }
     }
 };
-void loadFromFile(Graph& graph, Friend_list& friendList, AVLTree& avlTree) {
+
+void displayMenu()
+{
+    //system("cls");
+    cout<<"\n--- Social Network Menu ---\n";
+    cout<<"1. Add Friend to Friend List\n";
+    cout<<"2. Remove Friend from Friend List\n";
+    cout<<"3. Display Friend List\n";
+    cout<<"4. Add Friend Request\n";
+    cout<<"5. Process Friend Request\n";
+    cout<<"6. Display Friend Requests\n";
+    cout<<"7. Block a User\n";
+    cout<<"8. Undo Block\n";
+    cout<<"9. Display Blocked Users\n";
+    cout<<"10. Add Friend to AVL Tree\n";
+    cout<<"11. Display Friends in AVL Tree\n";
+    cout<<"12. Add User to Graph\n";
+    cout<<"13. Add Connection in Graph\n";
+    cout<<"14. Display Connections in Graph\n";
+    cout<<"15. Suggest Friends (BFS)\n";
+    cout<<"16. Suggest Friends (DFS)\n";
+    cout<<"17. Add Interest to Hash Map\n";
+    cout<<"18. Recommend Friends by Interest\n";
+    cout<<"19. Save to File\n";
+    cout<<"20. Load from File\n";
+    cout<<"0. Exit\n";
+}
+
+void loadFromFile(Graph& graph, Friend_list& friendList, AVLTree& avlTree)
+{
     ifstream userFile("users.txt");
     ifstream friendFile("friends.txt");
 
-    if (!userFile || !friendFile) {
-        cout << "Error: Could not open file for reading.\n";
+    if (!userFile||!friendFile)
+    {
+        cout<<"Error: Could not open file for reading.\n";
         return;
     }
 
     // Load user data
     string line;
-    while (getline(userFile, line)) {
-        size_t firstSpace = line.find(' ');
-        size_t secondSpace = line.find(' ', firstSpace + 1);
-        size_t thirdSpace = line.find(' ', secondSpace + 1);
-        size_t fourthSpace = line.find(' ', thirdSpace + 1);
-        size_t fifthSpace = line.find(' ', fourthSpace + 1);
+    while (getline(userFile, line))
+    {
+        size_t firstSpace=line.find(' ');
+        size_t secondSpace=line.find(' ', firstSpace+1);
+        size_t thirdSpace=line.find(' ', secondSpace+1);
+        size_t fourthSpace=line.find(' ', thirdSpace+1);
+        size_t fifthSpace=line.find(' ', fourthSpace+1);
 
-        if (firstSpace != string::npos && secondSpace != string::npos &&
-            thirdSpace != string::npos && fourthSpace != string::npos && fifthSpace != string::npos) {
-            int index = stoi(line.substr(0, firstSpace)); // Extract index
-            string name = line.substr(firstSpace + 1, secondSpace - firstSpace - 1); // Extract name
-            int friendshipLevel = stoi(line.substr(secondSpace + 1, thirdSpace - secondSpace - 1)); // Extract friendship level
-            string interest1 = line.substr(thirdSpace + 1, fourthSpace - thirdSpace - 1); // Extract first interest
-            string interest2 = line.substr(fourthSpace + 1, fifthSpace - fourthSpace - 1); // Extract second interest
-            string interest3 = line.substr(fifthSpace + 1); // Extract third interest
+        if(firstSpace!=string::npos&&secondSpace!=string::npos&&
+            thirdSpace!=string::npos&&fourthSpace!=string::npos&&fifthSpace!=string::npos)
+            {
+            int index=stoi(line.substr(0, firstSpace)); // Extract index
+            string name=line.substr(firstSpace+1, secondSpace-firstSpace-1); // Extract name
+            int friendshipLevel=stoi(line.substr(secondSpace+1, thirdSpace-secondSpace-1)); // Extract friendship level
+            string interest1=line.substr(thirdSpace+1, fourthSpace-thirdSpace-1); // Extract first interest
+            string interest2=line.substr(fourthSpace+1, fifthSpace-fourthSpace-1); // Extract second interest
+            string interest3=line.substr(fifthSpace+1); // Extract third interest
 
-            graph.settinguser(index, name);
-            friendList.addingfriend({ name, friendshipLevel, {interest1, interest2, interest3} });
-            avlTree.addfriend({ name, friendshipLevel, {interest1, interest2, interest3} });
+            graph.settinguser(index,name);
+            friendList.addingfriend({name,friendshipLevel,{interest1,interest2,interest3}});
+            avlTree.addfriend({name,friendshipLevel,{interest1,interest2,interest3}});
         }
     }
 
     // Load friend connections
-    int user1, user2;
-    while (friendFile >> user1 >> user2) {
+    int user1,user2;
+    while(friendFile>>user1>>user2)
+    {
         graph.addingconnections(user1, user2);
     }
-
-    cout << "Data successfully loaded from files.\n";
+    cout<<"Data successfully loaded from files.\n";
 }
-void displayMenu() {
-    cout << "\n--- Social Network Menu ---\n";
-    cout << "1. Add Friend to Friend List\n";
-    cout << "2. Remove Friend from Friend List\n";
-    cout << "3. Display Friend List\n";
-    cout << "4. Add Friend Request\n";
-    cout << "5. Process Friend Request\n";
-    cout << "6. Display Friend Requests\n";
-    cout << "7. Block a User\n";
-    cout << "8. Undo Block\n";
-    cout << "9. Display Blocked Users\n";
-    cout << "10. Add Friend to AVL Tree\n";
-    cout << "11. Display Friends in AVL Tree\n";
-    cout << "12. Add User to Graph\n";
-    cout << "13. Add Connection in Graph\n";
-    cout << "14. Display Connections in Graph\n";
-    cout << "15. Suggest Friends (BFS)\n";
-    cout << "16. Suggest Friends (DFS)\n";
-    cout << "17. Add Interest to Hash Map\n";
-    cout << "18. Recommend Friends by Interest\n";
-    cout << "19. Save to File\n";
-    cout << "20. Load from File\n";
-    cout << "0. Exit\n";
-}
-    int main()
-    {
-    // Create some users and friends
-    User user1={"Alice",{"Reading", "Cooking", "Hiking"}};
-    User user2={"Bob",{"Gaming", "Swimming", "Traveling"}};
-    
-    Friend friend1={"Charlie",5, {"Gaming", "Coding", "Music"}};
-    Friend friend2={"Diana",7, {"Cooking", "Dancing", "Traveling"}};
-    
-    // Friend List Test
-    Friend_list friendList;
-    friendList.addingfriend(friend1);
-    friendList.addingfriend(friend2);
-    friendList.displayingfriends();
 
-    // Queue Test
-    Friend_queue friendQueue;
-    friendQueue.enqueue("Charlie");
-    friendQueue.enqueue("Diana");
-    friendQueue.displayrequests();
-    friendQueue.dequeue();
-
-    // Blocked Friends Test
-    Blocked_friends blocked;
-    blocked.push("Charlie");
-    if (blocked.is_Blocked("Charlie")) {
-        cout << "Charlie is blocked.\n";
-    }
-    //Blocked_friends blocked;
-
-    // Add blocked friends
-    blocked.push("Alice");
-    blocked.push("Bob");
-    blocked.push("Charlie");
-    
-    // Get and display all blocked friends
-    int blockedCount=0;
-    string* blockedList=blocked.get_blocked_friends(blockedCount);
-    if(blockedList)
-    {
-        cout<<"Blocked Friends List:\n";
-        for (int i=0;i<blockedCount;i++)
-        {
-            cout<<"- "<<blockedList[i]<<endl;
-        }
-        delete[] blockedList;//Free the dynamically allocated memory
-    }
-    else
-    {
-        cout<<"No blocked friends."<<endl;
-    }
-    // Get and display the count of blocked friends
-    cout<<"Total Blocked Friends: "<<blockedCount<<endl;
-    return 0;
-}
-int main() {
+int main()
+{
     Friend_list friendList;
     Friend_queue friendQueue;
     Blocked_friends blocked;
@@ -828,36 +874,41 @@ int main() {
     Graph graph(5);
     HashMap hashMap(10);
 
-    int userCounter = 0; // Counter to track the next available index for adding users
+    int userCounter=0; // Counter to track the next available index for adding users
 
     int choice;
-    do {
+    do
+    {
         displayMenu();
-        cout << "Enter your choice: ";
-        cin >> choice;
+        cout<<"Enter your choice: ";
+        cin>>choice;
         cin.ignore(); // To ignore newline character
 
-        switch (choice) {
-        case 1: {
+        switch(choice)
+        {
+        case 1:
+        {
             string name;
             int level;
             string interests[3];
-            cout << "Enter Friend Name: ";
+            cout<<"Enter Friend Name: ";
             getline(cin, name);
-            cout << "Enter Friendship Level: ";
-            cin >> level;
+            cout<<"Enter Friendship Level: ";
+            cin>>level;
             cin.ignore();
-            for (int i = 0; i < 3; i++) {
-                cout << "Enter Interest " << (i + 1) << ": ";
+            for(int i=0;i<3;i++)
+            {
+                cout<<"Enter Interest "<<(i+1)<<": ";
                 getline(cin, interests[i]);
             }
-            friendList.addingfriend({ name, level, {interests[0], interests[1], interests[2]} });
-            avlTree.addfriend({ name, level, {interests[0], interests[1], interests[2]} });
+            friendList.addingfriend({name,level,{interests[0],interests[1],interests[2]}});
+            avlTree.addfriend({name,level,{interests[0],interests[1],interests[2]}});
             break;
         }
-        case 2: {
+        case 2:
+        {
             string name;
-            cout << "Enter Friend Name to Remove: ";
+            cout<<"Enter Friend Name to Remove: ";
             getline(cin, name);
             friendList.removingfriend(name);
             break;
@@ -865,9 +916,10 @@ int main() {
         case 3:
             friendList.displayingfriends();
             break;
-        case 4: {
+        case 4:
+        {
             string name;
-            cout << "Enter Friend Request Name: ";
+            cout<<"Enter Friend Request Name: ";
             getline(cin, name);
             friendQueue.enqueue(name);
             break;
@@ -878,9 +930,10 @@ int main() {
         case 6:
             friendQueue.displayrequests();
             break;
-        case 7: {
+        case 7:
+        {
             string name;
-            cout << "Enter User to Block: ";
+            cout<<"Enter User to Block: ";
             getline(cin, name);
             blocked.push(name);
             break;
@@ -888,92 +941,105 @@ int main() {
         case 8:
             blocked.undo_block();
             break;
-        case 9: {
-            int blockedCount = 0;
-            string* blockedList = blocked.get_blocked_friends(blockedCount);
-            if (blockedList) {
-                cout << "Blocked Users:\n";
-                for (int i = 0; i < blockedCount; i++) {
-                    cout << "- " << blockedList[i] << endl;
+        case 9:
+        {
+            int blockedCount=0;
+            string* blockedList=blocked.get_blocked_friends(blockedCount);
+            if(blockedList)
+            {
+                cout<<"Blocked Users:\n";
+                for(int i=0;i<blockedCount;i++)
+                {
+                    cout<<"- "<<blockedList[i]<<endl;
                 }
                 delete[] blockedList;
             }
             else {
-                cout << "No blocked users.\n";
+                cout<<"No blocked users.\n";
             }
             break;
         }
-        case 10: {
+        case 10:
+        {
             string name;
             int level;
             string interests[3];
-            cout << "Enter Friend Name: ";
+            cout<<"Enter Friend Name: ";
             getline(cin, name);
-            cout << "Enter Friendship Level: ";
-            cin >> level;
+            cout<<"Enter Friendship Level: ";
+            cin>>level;
             cin.ignore();
-            for (int i = 0; i < 3; i++) {
-                cout << "Enter Interest " << (i + 1) << ": ";
+            for(int i=0;i<3;i++)
+            {
+                cout<<"Enter Interest "<<(i + 1)<<": ";
                 getline(cin, interests[i]);
             }
-            avlTree.addfriend({ name, level, {interests[0], interests[1], interests[2]} });
+            avlTree.addfriend({name,level,{interests[0],interests[1],interests[2]} });
             break;
         }
         case 11:
             avlTree.displayfriends();
             break;
-        case 12: {
-            if (userCounter >= 5) {
-                cout << "Graph is full. Cannot add more users.\n";
+        case 12:
+        {
+            if(userCounter >= 5)
+            {
+                cout<<"Graph is full. Cannot add more users.\n";
             }
-            else {
+            else
+            {
                 string name;
-                cout << "Enter User Name: ";
+                cout<<"Enter User Name: ";
                 getline(cin, name);
                 graph.settinguser(userCounter, name);
-                cout << "User added at index " << userCounter << ".\n";
+                cout<<"User added at index "<<userCounter<<".\n";
                 userCounter++;
             }
             break;
         }
-        case 13: {
+        case 13:
+        {
             int user1, user2;
-            cout << "Enter First User Index: ";
-            cin >> user1;
-            cout << "Enter Second User Index: ";
-            cin >> user2;
+            cout<<"Enter First User Index: ";
+            cin>>user1;
+            cout<<"Enter Second User Index: ";
+            cin>>user2;
             graph.addingconnections(user1, user2);
             break;
         }
         case 14:
             graph.displaying_all_connections();
             break;
-        case 15: {
+        case 15:
+        {
             int user_index;
-            cout << "Enter User Index: ";
-            cin >> user_index;
+            cout<<"Enter User Index: ";
+            cin>>user_index;
             graph.suggesting_mutual_friends_bfs(user_index);
             break;
         }
-        case 16: {
+        case 16:
+        {
             int user_index;
-            cout << "Enter User Index: ";
-            cin >> user_index;
+            cout<<"Enter User Index: ";
+            cin>>user_index;
             graph.suggesting_mutual_friends_dfs(user_index);
             break;
         }
-        case 17: {
+        case 17:
+        {
             string interest, name;
-            cout << "Enter Interest: ";
+            cout<<"Enter Interest: ";
             getline(cin, interest);
-            cout << "Enter Name: ";
+            cout<<"Enter Name: ";
             getline(cin, name);
             hashMap.insert(interest, name);
             break;
         }
-        case 18: {
+        case 18:
+        {
             string interest;
-            cout << "Enter Interest: ";
+            cout<<"Enter Interest: ";
             getline(cin, interest);
             hashMap.recommend(interest);
             break;
@@ -985,53 +1051,55 @@ int main() {
             loadFromFile(graph, friendList, avlTree);
             break;
         case 0:
-            cout << "Exiting program.\n";
+            cout<<"Exiting program.\n";
             break;
         default:
-            cout << "Invalid choice. Please try again.\n";
+            cout<<"Invalid choice. Please try again.\n";
         }
-    } while (choice != 0);
+    }
+    while(choice != 0);
 
     return 0;
 }
 
-// int main() {
+
+//int main() {
 //    // Test Friend List functionality
 //    Friend_list friendList;
 //    Friend friend1 = { "Charlie", 5, {"Gaming", "Coding", "Music"} };
 //    Friend friend2 = { "Diana", 7, {"Cooking", "Dancing", "Traveling"} };
 //    Friend friend3 = { "Eve", 3, {"Reading", "Hiking", "Swimming"} };
-
+//
 //    friendList.addingfriend(friend1);
 //    friendList.addingfriend(friend2);
 //    friendList.addingfriend(friend3);
-
+//
 //    cout << "--- Friend List (Sorted) ---\n";
 //    friendList.displayingfriends();
-
+//
 //    // Remove a friend
 //    friendList.removingfriend("Diana");
 //    cout << "--- Friend List After Removing Diana ---\n";
 //    friendList.displayingfriends();
-
+//
 //    // Test Friend Queue functionality
 //    Friend_queue friendQueue;
 //    friendQueue.enqueue("Charlie");
 //    friendQueue.enqueue("Eve");
 //    friendQueue.enqueue("Bob");
-
+//
 //    cout << "--- Friend Requests ---\n";
 //    friendQueue.displayrequests();
 //    friendQueue.dequeue();
 //    cout << "--- Friend Requests After Processing ---\n";
 //    friendQueue.displayrequests();
-
+//
 //    // Test Blocked Friends functionality
 //    Blocked_friends blocked;
 //    blocked.push("Alice");
 //    blocked.push("Charlie");
 //    blocked.push("Diana");
-
+//
 //    cout << "--- Blocked Friends List ---\n";
 //    int blockedCount = 0;
 //    string* blockedList = blocked.get_blocked_friends(blockedCount);
@@ -1039,7 +1107,7 @@ int main() {
 //        cout << "- " << blockedList[i] << endl;
 //    }
 //    delete[] blockedList;
-
+//
 //    // Undo blocking
 //    blocked.undo_block();
 //    cout << "--- Blocked Friends After Undo ---\n";
@@ -1048,16 +1116,16 @@ int main() {
 //        cout << "- " << blockedList[i] << endl;
 //    }
 //    delete[] blockedList;
-
+//
 //    // Test AVL Tree functionality
 //    AVLTree avlTree;
 //    avlTree.addfriend(friend1);
 //    avlTree.addfriend(friend2);
 //    avlTree.addfriend(friend3);
-
+//
 //    cout << "--- AVL Tree Friends (Sorted by Friendship Level) ---\n";
 //    avlTree.displayfriends();
-
+//
 //    // Test Graph functionality
 //    Graph graph(5);
 //    graph.settinguser(0, "Alice");
@@ -1065,21 +1133,21 @@ int main() {
 //    graph.settinguser(2, "Charlie");
 //    graph.settinguser(3, "Diana");
 //    graph.settinguser(4, "Eve");
-
+//
 //    graph.addingconnections(0, 1);
 //    graph.addingconnections(1, 2);
 //    graph.addingconnections(2, 3);
 //    graph.addingconnections(3, 4);
-
+//
 //    cout << "--- Mutual Friend Connections ---\n";
 //    graph.displaying_all_connections();
-
+//
 //    cout << "--- Friend Suggestions for Alice (BFS) ---\n";
 //    graph.suggesting_mutual_friends_bfs(0);
-
+//
 //    cout << "--- Friend Suggestions for Alice (DFS) ---\n";
 //    graph.suggesting_mutual_friends_dfs(0);
-
+//
 //    // Test HashMap functionality
 //    HashMap hashMap(10);
 //    vector<string> interests = { "Reading", "Cooking", "Gaming", "Traveling", "Music" };
@@ -1087,15 +1155,15 @@ int main() {
 //    hashMap.insert("Gaming", "Charlie");
 //    hashMap.insert("Cooking", "Diana");
 //    hashMap.insert("Traveling", "Bob");
-
+//
 //    cout << "--- Hash Map Contents ---\n";
 //    hashMap.display();
-
+//
 //    cout << "--- Recommendations for 'Gaming' ---\n";
 //    hashMap.recommend("Gaming");
-
+//
 //    cout << "--- Recommendations for 'Dancing' ---\n";
 //    hashMap.recommend("Dancing");
-
+//
 //    return 0;
-// }
+//}
