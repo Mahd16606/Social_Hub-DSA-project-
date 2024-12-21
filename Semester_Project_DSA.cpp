@@ -700,6 +700,47 @@ public:
         }
     }
 };
+void loadFromFile(Graph& graph, Friend_list& friendList, AVLTree& avlTree) {
+    ifstream userFile("users.txt");
+    ifstream friendFile("friends.txt");
+
+    if (!userFile || !friendFile) {
+        cout << "Error: Could not open file for reading.\n";
+        return;
+    }
+
+    // Load user data
+    string line;
+    while (getline(userFile, line)) {
+        size_t firstSpace = line.find(' ');
+        size_t secondSpace = line.find(' ', firstSpace + 1);
+        size_t thirdSpace = line.find(' ', secondSpace + 1);
+        size_t fourthSpace = line.find(' ', thirdSpace + 1);
+        size_t fifthSpace = line.find(' ', fourthSpace + 1);
+
+        if (firstSpace != string::npos && secondSpace != string::npos &&
+            thirdSpace != string::npos && fourthSpace != string::npos && fifthSpace != string::npos) {
+            int index = stoi(line.substr(0, firstSpace)); // Extract index
+            string name = line.substr(firstSpace + 1, secondSpace - firstSpace - 1); // Extract name
+            int friendshipLevel = stoi(line.substr(secondSpace + 1, thirdSpace - secondSpace - 1)); // Extract friendship level
+            string interest1 = line.substr(thirdSpace + 1, fourthSpace - thirdSpace - 1); // Extract first interest
+            string interest2 = line.substr(fourthSpace + 1, fifthSpace - fourthSpace - 1); // Extract second interest
+            string interest3 = line.substr(fifthSpace + 1); // Extract third interest
+
+            graph.settinguser(index, name);
+            friendList.addingfriend({ name, friendshipLevel, {interest1, interest2, interest3} });
+            avlTree.addfriend({ name, friendshipLevel, {interest1, interest2, interest3} });
+        }
+    }
+
+    // Load friend connections
+    int user1, user2;
+    while (friendFile >> user1 >> user2) {
+        graph.addingconnections(user1, user2);
+    }
+
+    cout << "Data successfully loaded from files.\n";
+}
 
     int main()
     {
