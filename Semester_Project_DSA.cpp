@@ -820,3 +820,177 @@ void displayMenu() {
     cout<<"Total Blocked Friends: "<<blockedCount<<endl;
     return 0;
 }
+int main() {
+    Friend_list friendList;
+    Friend_queue friendQueue;
+    Blocked_friends blocked;
+    AVLTree avlTree;
+    Graph graph(5);
+    HashMap hashMap(10);
+
+    int userCounter = 0; // Counter to track the next available index for adding users
+
+    int choice;
+    do {
+        displayMenu();
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore(); // To ignore newline character
+
+        switch (choice) {
+        case 1: {
+            string name;
+            int level;
+            string interests[3];
+            cout << "Enter Friend Name: ";
+            getline(cin, name);
+            cout << "Enter Friendship Level: ";
+            cin >> level;
+            cin.ignore();
+            for (int i = 0; i < 3; i++) {
+                cout << "Enter Interest " << (i + 1) << ": ";
+                getline(cin, interests[i]);
+            }
+            friendList.addingfriend({ name, level, {interests[0], interests[1], interests[2]} });
+            avlTree.addfriend({ name, level, {interests[0], interests[1], interests[2]} });
+            break;
+        }
+        case 2: {
+            string name;
+            cout << "Enter Friend Name to Remove: ";
+            getline(cin, name);
+            friendList.removingfriend(name);
+            break;
+        }
+        case 3:
+            friendList.displayingfriends();
+            break;
+        case 4: {
+            string name;
+            cout << "Enter Friend Request Name: ";
+            getline(cin, name);
+            friendQueue.enqueue(name);
+            break;
+        }
+        case 5:
+            friendQueue.dequeue();
+            break;
+        case 6:
+            friendQueue.displayrequests();
+            break;
+        case 7: {
+            string name;
+            cout << "Enter User to Block: ";
+            getline(cin, name);
+            blocked.push(name);
+            break;
+        }
+        case 8:
+            blocked.undo_block();
+            break;
+        case 9: {
+            int blockedCount = 0;
+            string* blockedList = blocked.get_blocked_friends(blockedCount);
+            if (blockedList) {
+                cout << "Blocked Users:\n";
+                for (int i = 0; i < blockedCount; i++) {
+                    cout << "- " << blockedList[i] << endl;
+                }
+                delete[] blockedList;
+            }
+            else {
+                cout << "No blocked users.\n";
+            }
+            break;
+        }
+        case 10: {
+            string name;
+            int level;
+            string interests[3];
+            cout << "Enter Friend Name: ";
+            getline(cin, name);
+            cout << "Enter Friendship Level: ";
+            cin >> level;
+            cin.ignore();
+            for (int i = 0; i < 3; i++) {
+                cout << "Enter Interest " << (i + 1) << ": ";
+                getline(cin, interests[i]);
+            }
+            avlTree.addfriend({ name, level, {interests[0], interests[1], interests[2]} });
+            break;
+        }
+        case 11:
+            avlTree.displayfriends();
+            break;
+        case 12: {
+            if (userCounter >= 5) {
+                cout << "Graph is full. Cannot add more users.\n";
+            }
+            else {
+                string name;
+                cout << "Enter User Name: ";
+                getline(cin, name);
+                graph.settinguser(userCounter, name);
+                cout << "User added at index " << userCounter << ".\n";
+                userCounter++;
+            }
+            break;
+        }
+        case 13: {
+            int user1, user2;
+            cout << "Enter First User Index: ";
+            cin >> user1;
+            cout << "Enter Second User Index: ";
+            cin >> user2;
+            graph.addingconnections(user1, user2);
+            break;
+        }
+        case 14:
+            graph.displaying_all_connections();
+            break;
+        case 15: {
+            int user_index;
+            cout << "Enter User Index: ";
+            cin >> user_index;
+            graph.suggesting_mutual_friends_bfs(user_index);
+            break;
+        }
+        case 16: {
+            int user_index;
+            cout << "Enter User Index: ";
+            cin >> user_index;
+            graph.suggesting_mutual_friends_dfs(user_index);
+            break;
+        }
+        case 17: {
+            string interest, name;
+            cout << "Enter Interest: ";
+            getline(cin, interest);
+            cout << "Enter Name: ";
+            getline(cin, name);
+            hashMap.insert(interest, name);
+            break;
+        }
+        case 18: {
+            string interest;
+            cout << "Enter Interest: ";
+            getline(cin, interest);
+            hashMap.recommend(interest);
+            break;
+        }
+        case 19:
+            // Save functionality (already implemented)
+            break;
+        case 20:
+            loadFromFile(graph, friendList, avlTree);
+            break;
+        case 0:
+            cout << "Exiting program.\n";
+            break;
+        default:
+            cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 0);
+
+    return 0;
+}
