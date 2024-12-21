@@ -994,3 +994,108 @@ int main() {
 
     return 0;
 }
+
+// int main() {
+//    // Test Friend List functionality
+//    Friend_list friendList;
+//    Friend friend1 = { "Charlie", 5, {"Gaming", "Coding", "Music"} };
+//    Friend friend2 = { "Diana", 7, {"Cooking", "Dancing", "Traveling"} };
+//    Friend friend3 = { "Eve", 3, {"Reading", "Hiking", "Swimming"} };
+
+//    friendList.addingfriend(friend1);
+//    friendList.addingfriend(friend2);
+//    friendList.addingfriend(friend3);
+
+//    cout << "--- Friend List (Sorted) ---\n";
+//    friendList.displayingfriends();
+
+//    // Remove a friend
+//    friendList.removingfriend("Diana");
+//    cout << "--- Friend List After Removing Diana ---\n";
+//    friendList.displayingfriends();
+
+//    // Test Friend Queue functionality
+//    Friend_queue friendQueue;
+//    friendQueue.enqueue("Charlie");
+//    friendQueue.enqueue("Eve");
+//    friendQueue.enqueue("Bob");
+
+//    cout << "--- Friend Requests ---\n";
+//    friendQueue.displayrequests();
+//    friendQueue.dequeue();
+//    cout << "--- Friend Requests After Processing ---\n";
+//    friendQueue.displayrequests();
+
+//    // Test Blocked Friends functionality
+//    Blocked_friends blocked;
+//    blocked.push("Alice");
+//    blocked.push("Charlie");
+//    blocked.push("Diana");
+
+//    cout << "--- Blocked Friends List ---\n";
+//    int blockedCount = 0;
+//    string* blockedList = blocked.get_blocked_friends(blockedCount);
+//    for (int i = 0; i < blockedCount; i++) {
+//        cout << "- " << blockedList[i] << endl;
+//    }
+//    delete[] blockedList;
+
+//    // Undo blocking
+//    blocked.undo_block();
+//    cout << "--- Blocked Friends After Undo ---\n";
+//    blockedList = blocked.get_blocked_friends(blockedCount);
+//    for (int i = 0; i < blockedCount; i++) {
+//        cout << "- " << blockedList[i] << endl;
+//    }
+//    delete[] blockedList;
+
+//    // Test AVL Tree functionality
+//    AVLTree avlTree;
+//    avlTree.addfriend(friend1);
+//    avlTree.addfriend(friend2);
+//    avlTree.addfriend(friend3);
+
+//    cout << "--- AVL Tree Friends (Sorted by Friendship Level) ---\n";
+//    avlTree.displayfriends();
+
+//    // Test Graph functionality
+//    Graph graph(5);
+//    graph.settinguser(0, "Alice");
+//    graph.settinguser(1, "Bob");
+//    graph.settinguser(2, "Charlie");
+//    graph.settinguser(3, "Diana");
+//    graph.settinguser(4, "Eve");
+
+//    graph.addingconnections(0, 1);
+//    graph.addingconnections(1, 2);
+//    graph.addingconnections(2, 3);
+//    graph.addingconnections(3, 4);
+
+//    cout << "--- Mutual Friend Connections ---\n";
+//    graph.displaying_all_connections();
+
+//    cout << "--- Friend Suggestions for Alice (BFS) ---\n";
+//    graph.suggesting_mutual_friends_bfs(0);
+
+//    cout << "--- Friend Suggestions for Alice (DFS) ---\n";
+//    graph.suggesting_mutual_friends_dfs(0);
+
+//    // Test HashMap functionality
+//    HashMap hashMap(10);
+//    vector<string> interests = { "Reading", "Cooking", "Gaming", "Traveling", "Music" };
+//    hashMap.insert("Reading", "Alice");
+//    hashMap.insert("Gaming", "Charlie");
+//    hashMap.insert("Cooking", "Diana");
+//    hashMap.insert("Traveling", "Bob");
+
+//    cout << "--- Hash Map Contents ---\n";
+//    hashMap.display();
+
+//    cout << "--- Recommendations for 'Gaming' ---\n";
+//    hashMap.recommend("Gaming");
+
+//    cout << "--- Recommendations for 'Dancing' ---\n";
+//    hashMap.recommend("Dancing");
+
+//    return 0;
+// }
